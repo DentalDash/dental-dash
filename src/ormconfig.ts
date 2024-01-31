@@ -7,6 +7,6 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
   username: 'pguser',
   password: 'pgpassword',
   database: 'dental_dash',
-  entities: ["dist/**/*.entity{.ts,.js}"],
+  entities: ['dist/**/*.entity{.ts,.js}'],
   synchronize: true,
 };

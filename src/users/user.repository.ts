@@ -4,11 +4,13 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UserRole } from './user.role';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
-import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
-
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 
 @Injectable()
-
 export class UserRepository extends Repository<User> {
   async createUser(
     createUserDto: CreateUserDto,
