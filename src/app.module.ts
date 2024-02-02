@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -14,8 +15,11 @@ import { UsersModule } from './users/users.module';
       database: 'dental_dash',
       entities: [User],
       synchronize: true,
+      
+
     }),
     UsersModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
