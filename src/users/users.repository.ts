@@ -5,6 +5,7 @@ import { UserRole } from './user.role';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { LoginDto } from './dto/login-dto';
 
 
 @Injectable()
@@ -37,6 +38,17 @@ export class UserRepository extends Repository<User> {
           'Erro ao salvar o usuário no banco de dados',
         );
       }
+    }
+  }
+
+  async checkCredentials(LoginDto: LoginDto): Promise<User> {
+    const { email, password } = LoginDto;
+    const user = await this.findOne({ where: { email, status: true } });
+
+    if (user && (await user.checkPassword(password))) {
+      return user;
+    } else {
+      return null;
     }
   }
 
