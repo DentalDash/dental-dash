@@ -1,16 +1,19 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { User } from '../users/entities/user.entity';
 import { UserRole } from '../users/user.role';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { LoginDto } from 'src/users/dto/login-dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
     constructor(
-        @InjectRepository(User)
-        private usersRepository: Repository<User>,
+      @InjectRepository(User)
+      private usersRepository: Repository<User>,
+      private jwtService: JwtService,
     ) {}
 
     async signUp(createUserDto: CreateUserDto): Promise<User> {
@@ -32,4 +35,24 @@ export class AuthService {
 
         return await this.usersRepository.save(newUser);
     }
-}
+
+    async signIn(loginDto: LoginDto): Promise<{ token: string }> {
+        const { email, password } = loginDto;
+        const user = await this.usersRepository.findOne({ where: { email } });
+    
+        if (!user) {
+          throw new UnauthorizedException('Usuário não encontrado');
+        }
+    
+        if (!(await bcrypt.compare(password, user.password))) {
+          throw new UnauthorizedException('Credenciais inválidas');
+        }
+    
+        const jwtPayload = {
+          id: user.id,
+        };
+        const token = await this.jwtService.sign(jwtPayload);
+        return { token };
+      }
+ }
+
