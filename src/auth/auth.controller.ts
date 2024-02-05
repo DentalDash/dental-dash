@@ -1,10 +1,18 @@
-import { Controller, Post, Body, ValidationPipe, UnauthorizedException, Get, UseGuards, Req } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { CreateUserDto } from '../users/dto/create-user.dto';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  UnauthorizedException,
+  ValidationPipe,
+} from '@nestjs/common';
+import { UseGuards } from '@nestjs/common/decorators/core/use-guards.decorator';
 import { LoginDto } from 'src/users/dto/login-dto';
 import { User } from 'src/users/entities/user.entity';
-import { AuthGuard } from '@nestjs/passport';
-import { GetUser } from './auth.user';
+import { CreateUserDto } from '../users/dto/create-user.dto';
+import { RolesGuard } from './auth.guard';
+import { AuthService } from './auth.service';
+import { GetUserId } from './auth.user';
 
 @Controller('auth')
 export class AuthController {
@@ -37,8 +45,13 @@ export class AuthController {
   }
 
   @Get('/me')
-  @UseGuards(AuthGuard())
-  getMe(@GetUser() user: User): User {
-    return user;
+  @UseGuards(RolesGuard)
+  async getMe(@GetUserId() userId: string): Promise<User | string> {
+    try {
+      const user = await this.authService.getUserById(userId);
+      return user;
+    } catch (error) {
+      return 'Erro ao buscar usuário';
+    }
   }
 }

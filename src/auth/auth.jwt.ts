@@ -1,9 +1,8 @@
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy, ExtractJwt } from 'passport-jwt';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ExtractJwt, Strategy } from 'passport-jwt';
 import { UserRepository } from '../users/users.repository';
-
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -13,7 +12,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      
+
       secretOrKey: 'super-secret',
     });
   }
@@ -23,10 +22,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       where: { id: String(id) },
       select: ['name', 'email', 'status', 'role'],
     });
+    Logger.log(user, 'user');
     if (!user) {
       throw new UnauthorizedException('Usuário não encontrado');
     }
-  
+
     return user;
   }
 }
