@@ -19,7 +19,7 @@ export class UsersController {
 
   @Post()
   @Role(UserRole.ADMIN)
-  @UseGuards(AuthGuard(), RolesGuard)
+  @UseGuards(RolesGuard)
   async createAdminUser(
     @Body(ValidationPipe) createUserDto: CreateUserDto,
   ): Promise<ReturnUserDto> {
