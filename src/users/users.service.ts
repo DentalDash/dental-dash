@@ -5,22 +5,18 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
-import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import { UserRole } from './user.role';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FindUsersQueryDto } from './dto/find-user.dto';
+import { UserRepository } from './users.repository';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(User)
-    private usersRepository: Repository<User>,
-  ) {}
+  constructor(private readonly usersRepository: UserRepository) {}
 
   async createAdminUser(createUserDto: CreateUserDto): Promise<User> {
     if (createUserDto.password != createUserDto.passwordConfirmation) {
@@ -101,50 +97,11 @@ export class UsersService {
   async findUsers(
     queryDto: FindUsersQueryDto,
   ): Promise<{ users: User[]; total: number }> {
-    const { email, name, status = true, role } = queryDto;
-    let { page = 1, limit = 100, sort = '{"id": "DESC"}' } = queryDto;
-    const queryBuilder = this.usersRepository.createQueryBuilder('user');
-
-    queryBuilder.where('user.status = :status', { status });
-
-    if (email) {
-      queryBuilder.andWhere('user.email ILIKE :email', { email: `%${email}%` });
-    }
-
-    if (name) {
-      queryBuilder.andWhere('user.name ILIKE :name', { name: `%${name}%` });
-    }
-
-    if (role) {
-      queryBuilder.andWhere('user.role = :role', { role });
-    }
-
-    page = page < 1 ? 1 : page;
-
-    limit = limit > 100 ? 100 : limit;
-
-    queryBuilder.skip((page - 1) * limit);
-    queryBuilder.take(limit);
-
     try {
-      sort = JSON.parse(sort);
-      queryBuilder.orderBy(sort);
-    } catch (error) {
-      console.error(error);
-      throw new UnprocessableEntityException(
-        'Invalid sort attribute provided, must be a valid JSON object with the format `{ "field": "ASC|DESC" }`',
-      );
+      return await this.usersRepository.findUsers(queryDto);
+    } catch (err) {
+      console.error(err);
+      throw new InternalServerErrorException('Erro ao buscar os usuários');
     }
-
-    queryBuilder.select([
-      'user.name',
-      'user.email',
-      'user.role',
-      'user.status',
-    ]);
-
-    const [users, total] = await queryBuilder.getManyAndCount();
-
-    return { users, total };
   }
 }

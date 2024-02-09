@@ -1,20 +1,23 @@
-import { QueryBuilder, Repository } from 'typeorm';
-import { User } from './entities/user.entity';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UserRole } from './user.role';
-import * as bcrypt from 'bcrypt';
-import * as crypto from 'crypto';
 import {
-  BadRequestException,
   ConflictException,
   Injectable,
   InternalServerErrorException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
-import { LoginDto } from './dto/login-dto';
+import * as bcrypt from 'bcrypt';
+import * as crypto from 'crypto';
+import { DataSource, Repository } from 'typeorm';
+import { CreateUserDto } from './dto/create-user.dto';
 import { FindUsersQueryDto } from './dto/find-user.dto';
+import { User } from './entities/user.entity';
+import { UserRole } from './user.role';
 
 @Injectable()
 export class UserRepository extends Repository<User> {
+  constructor(private dataSource: DataSource) {
+    super(User, dataSource.createEntityManager());
+  }
+
   async createUser(
     createUserDto: CreateUserDto,
     role: UserRole,
@@ -45,17 +48,6 @@ export class UserRepository extends Repository<User> {
     }
   }
 
-  async checkCredentials(LoginDto: LoginDto): Promise<User> {
-    const { email, password } = LoginDto;
-    const user = await this.findOne({ where: { email, status: true } });
-
-    if (user && (await user.checkPassword(password))) {
-      return user;
-    } else {
-      return null;
-    }
-  }
-
   private async hashPassword(password: string, salt: string): Promise<string> {
     return bcrypt.hash(password, salt);
   }
@@ -63,36 +55,51 @@ export class UserRepository extends Repository<User> {
   async findUsers(
     queryDto: FindUsersQueryDto,
   ): Promise<{ users: User[]; total: number }> {
-    const { email, name, status, role } = queryDto;
-    const query = this.createQueryBuilder('user');
-    query.where('user.status = :status', { status });
+    const { email, name, status = true, role } = queryDto;
+    let { page = 1, limit = 100, sort = '{"id": "DESC"}' } = queryDto;
+    const queryBuilder = this.createQueryBuilder('users');
 
-    queryDto.status = queryDto.status === undefined ? true : queryDto.status;
-    queryDto.page = Math.max(1, queryDto.page);
-    queryDto.limit = Math.min(100, Math.max(1, queryDto.limit));
+    queryBuilder.where('users.status = :status', { status });
 
     if (email) {
-      query.andWhere('user.email ILIKE :email', { email: `%${email}%` });
+      queryBuilder.andWhere('users.email ILIKE :email', {
+        email: `%${email}%`,
+      });
     }
+
     if (name) {
-      query.andWhere('user.name ILIKE :name', { name: `%${name}%` });
+      queryBuilder.andWhere('users.name ILIKE :name', { name: `%${name}%` });
     }
+
     if (role) {
-      query.andWhere('user.role = :role', { role });
-    }
-    if (
-      typeof queryDto.page !== 'number' ||
-      typeof queryDto.limit !== 'number'
-    ) {
-      throw new BadRequestException('Valores de página ou limite inválidos');
+      queryBuilder.andWhere('users.role = :role', { role });
     }
 
-    query.skip((queryDto.page - 1) * queryDto.limit);
-    query.take(queryDto.limit);
-    query.orderBy(queryDto.sort ? JSON.parse(queryDto.sort) : undefined);
-    query.select(['user.name', 'user.email', 'user.role', 'user.status']);
+    page = page < 1 ? 1 : page;
 
-    const [users, total] = await query.getManyAndCount();
+    limit = limit > 100 ? 100 : limit;
+
+    queryBuilder.skip((page - 1) * limit);
+    queryBuilder.take(limit);
+
+    try {
+      sort = JSON.parse(sort);
+      queryBuilder.orderBy(sort);
+    } catch (error) {
+      console.error(error);
+      throw new UnprocessableEntityException(
+        'Invalid sort attribute provided, must be a valid JSON object with the format `{ "field": "ASC|DESC" }`',
+      );
+    }
+
+    queryBuilder.select([
+      'users.name',
+      'users.email',
+      'users.role',
+      'users.status',
+    ]);
+
+    const [users, total] = await queryBuilder.getManyAndCount();
 
     return { users, total };
   }
