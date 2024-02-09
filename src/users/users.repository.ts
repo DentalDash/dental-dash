@@ -4,13 +4,16 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UserRole } from './user.role';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
-import { BadRequestException, ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { LoginDto } from './dto/login-dto';
 import { FindUsersQueryDto } from './dto/find-user.dto';
 
-
 @Injectable()
-
 export class UserRepository extends Repository<User> {
   async createUser(
     createUserDto: CreateUserDto,
@@ -56,36 +59,41 @@ export class UserRepository extends Repository<User> {
   private async hashPassword(password: string, salt: string): Promise<string> {
     return bcrypt.hash(password, salt);
   }
-    async findUsers(queryDto: FindUsersQueryDto): Promise<{ users: User[]; total: number }> {
-      queryDto.status = queryDto.status === undefined ? true : queryDto.status;
-      queryDto.page = Math.max(1, queryDto.page);
-      queryDto.limit = Math.min(100, Math.max(1, queryDto.limit));
-      const { email, name, status, role } = queryDto;
-      const query = this.createQueryBuilder('user');
-      query.where('user.status = :status', { status });
-  
-      if (email) {
-        query.andWhere('user.email ILIKE :email', { email: `%${email}%` });
-      }
-  
-      if (name) {
-        query.andWhere('user.name ILIKE :name', { name: `%${name}%` });
-      }
 
-      if (role) {
-        query.andWhere('user.role = :role', { role });
-      }
-      if (typeof queryDto.page !== 'number' || typeof queryDto.limit !== 'number') {
-        throw new BadRequestException('Valores de página ou limite inválidos');
-      }
+  async findUsers(
+    queryDto: FindUsersQueryDto,
+  ): Promise<{ users: User[]; total: number }> {
+    const { email, name, status, role } = queryDto;
+    const query = this.createQueryBuilder('user');
+    query.where('user.status = :status', { status });
 
-      query.skip((queryDto.page - 1) * queryDto.limit);
-      query.take(queryDto.limit);
-      query.orderBy(queryDto.sort ? JSON.parse(queryDto.sort) : undefined);
-      query.select(['user.name', 'user.email', 'user.role', 'user.status']);
-  
-      const [users, total] = await query.getManyAndCount();
-  
-      return { users, total };
+    queryDto.status = queryDto.status === undefined ? true : queryDto.status;
+    queryDto.page = Math.max(1, queryDto.page);
+    queryDto.limit = Math.min(100, Math.max(1, queryDto.limit));
+
+    if (email) {
+      query.andWhere('user.email ILIKE :email', { email: `%${email}%` });
     }
+    if (name) {
+      query.andWhere('user.name ILIKE :name', { name: `%${name}%` });
+    }
+    if (role) {
+      query.andWhere('user.role = :role', { role });
+    }
+    if (
+      typeof queryDto.page !== 'number' ||
+      typeof queryDto.limit !== 'number'
+    ) {
+      throw new BadRequestException('Valores de página ou limite inválidos');
+    }
+
+    query.skip((queryDto.page - 1) * queryDto.limit);
+    query.take(queryDto.limit);
+    query.orderBy(queryDto.sort ? JSON.parse(queryDto.sort) : undefined);
+    query.select(['user.name', 'user.email', 'user.role', 'user.status']);
+
+    const [users, total] = await query.getManyAndCount();
+
+    return { users, total };
   }
+}

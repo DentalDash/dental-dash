@@ -49,36 +49,40 @@ export class UsersController {
       user,
       message: 'Usuário encontrado',
     };
-}
+  }
 
-@Patch(':id')
-async updateUser(
-  @Body(ValidationPipe) updateUserDto: UpdateUserDto,
-  @GetUserId() user: User,
-  @Param('id') id: string,
-) {
-  try {
-    const updatedUser = await this.usersService.updateUser(updateUserDto, id, user);
-    return updatedUser;
-  } catch (error) {
-    if (error instanceof ForbiddenException) {
-      throw error; // Repassa a exceção ForbiddenException diretamente
-    } else {
-      console.log(error);
-    
-      throw new InternalServerErrorException('Erro ao atualizar o usuário');
+  @Patch(':id')
+  async updateUser(
+    @Body(ValidationPipe) updateUserDto: UpdateUserDto,
+    @GetUserId() user: User,
+    @Param('id') id: string,
+  ) {
+    try {
+      const updatedUser = await this.usersService.updateUser(
+        updateUserDto,
+        id,
+        user,
+      );
+      return updatedUser;
+    } catch (error) {
+      if (error instanceof ForbiddenException) {
+        throw error; // Repassa a exceção ForbiddenException diretamente
+      } else {
+        console.log(error);
+
+        throw new InternalServerErrorException('Erro ao atualizar o usuário');
+      }
     }
   }
-}
   @Delete(':id')
   @Role(UserRole.ADMIN)
   async deleteUser(@Param('id') id: string) {
-   await this.usersService.deleteUser(id);
+    await this.usersService.deleteUser(id);
     return {
       message: 'Usuário removido com sucesso',
-  };
-}
-@Get()
+    };
+  }
+  @Get()
   @Role(UserRole.ADMIN)
   async findUsers(@Query() query: FindUsersQueryDto) {
     const found = await this.usersService.findUsers(query);

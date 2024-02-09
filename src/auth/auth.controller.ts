@@ -28,6 +28,9 @@ export class AuthController {
     };
   }
 
+  // Create a CURL command to test the /auth/signin endpoint
+  // curl -X POST http://localhost:3000/auth/signin -H "Content-Type: application/json" -d '{"email": "admin@dentaldash.com", "password": "#Dm140192"}'
+
   @Post('/signin')
   async signIn(
     @Body(ValidationPipe) loginDto: LoginDto,

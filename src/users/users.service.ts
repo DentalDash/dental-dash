@@ -1,4 +1,10 @@
-import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
@@ -44,74 +50,101 @@ export class UsersService {
     return user;
   }
 
-  async updateUser(updateUserDto: UpdateUserDto, id: string, user: User): Promise<User> {
+  async updateUser(
+    updateUserDto: UpdateUserDto,
+    id: string,
+    user: User,
+  ): Promise<User> {
     // Verificar se o usuário tem permissão para atualizar com base no papel
 
     const userToUpdate = await this.findUserById(id);
     const { name, email, role, status } = updateUserDto;
     // Atualizar apenas os campos fornecidos no DTO
     if (name) {
-        userToUpdate.name = name;
+      userToUpdate.name = name;
     }
     if (email) {
-        userToUpdate.email = email;
+      userToUpdate.email = email;
     }
     if (role) {
-        // Verificar se o usuário tem permissão para atribuir o papel
-        if (user.role !== UserRole.ADMIN) {
-            throw new ForbiddenException('Você não tem permissão para atribuir papéis');
-        }
-        userToUpdate.role = role;
+      // Verificar se o usuário tem permissão para atribuir o papel
+      if (user.role !== UserRole.ADMIN) {
+        throw new ForbiddenException(
+          'Você não tem permissão para atribuir papéis',
+        );
+      }
+      userToUpdate.role = role;
     }
     if (status !== undefined) {
-        userToUpdate.status = status;
+      userToUpdate.status = status;
     }
 
     try {
-        await userToUpdate.save();
-        return userToUpdate;
+      await userToUpdate.save();
+      return userToUpdate;
     } catch (error) {
-        throw new InternalServerErrorException('Erro ao salvar os dados no banco de dados');
-    }
-}
-
-async deleteUser(userId: string) {
-  const result = await this.usersRepository.delete({ id: userId });
-  if (result.affected === 0) {
-    throw new NotFoundException(
-      'Não foi encontrado um usuário com o ID informado',
-    );
+      throw new InternalServerErrorException(
+        'Erro ao salvar os dados no banco de dados',
+      );
     }
   }
 
-async findUsers(queryDto: FindUsersQueryDto): Promise<{ users: User[]; total: number }> {
-    queryDto.status = queryDto.status === undefined ? true : queryDto.status;
-    queryDto.page = queryDto.page < 1 ? 1 : queryDto.page;
-    queryDto.limit = queryDto.limit > 100 ? 100 : queryDto.limit;
-  
-    const { email, name, status, role } = queryDto;
+  async deleteUser(userId: string) {
+    const result = await this.usersRepository.delete({ id: userId });
+    if (result.affected === 0) {
+      throw new NotFoundException(
+        'Não foi encontrado um usuário com o ID informado',
+      );
+    }
+  }
+
+  async findUsers(
+    queryDto: FindUsersQueryDto,
+  ): Promise<{ users: User[]; total: number }> {
+    const { email, name, status = true, role } = queryDto;
+    let { page = 1, limit = 100, sort = '{"id": "DESC"}' } = queryDto;
     const queryBuilder = this.usersRepository.createQueryBuilder('user');
+
     queryBuilder.where('user.status = :status', { status });
-  
+
     if (email) {
       queryBuilder.andWhere('user.email ILIKE :email', { email: `%${email}%` });
     }
-  
+
     if (name) {
       queryBuilder.andWhere('user.name ILIKE :name', { name: `%${name}%` });
     }
-  
+
     if (role) {
       queryBuilder.andWhere('user.role = :role', { role });
     }
-  
-    queryBuilder.skip((queryDto.page - 1) * queryDto.limit);
-    queryBuilder.take(queryDto.limit);
-    queryBuilder.orderBy(queryDto.sort ? JSON.parse(queryDto.sort) : undefined);
-    queryBuilder.select(['user.name', 'user.email', 'user.role', 'user.status']);
-  
+
+    page = page < 1 ? 1 : page;
+
+    limit = limit > 100 ? 100 : limit;
+
+    queryBuilder.skip((page - 1) * limit);
+    queryBuilder.take(limit);
+
+    try {
+      sort = JSON.parse(sort);
+      queryBuilder.orderBy(sort);
+    } catch (error) {
+      console.error(error);
+      throw new UnprocessableEntityException(
+        'Invalid sort attribute provided, must be a valid JSON object with the format `{ "field": "ASC|DESC" }`',
+      );
+    }
+
+    queryBuilder.select([
+      'user.name',
+      'user.email',
+      'user.role',
+      'user.status',
+    ]);
+
     const [users, total] = await queryBuilder.getManyAndCount();
-  
+
     return { users, total };
   }
 }
