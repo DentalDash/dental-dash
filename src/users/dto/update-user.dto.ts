@@ -1,4 +1,3 @@
-
 import { IsString, IsEmail, IsOptional } from 'class-validator';
 import { UserRole } from '../user.role';
 export class UpdateUserDto {

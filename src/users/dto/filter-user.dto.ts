@@ -1,5 +1,5 @@
 export abstract class FilterUserDto {
-    sort: string;
-    page: number;
-    limit: number;
-  }
+  sort: string;
+  page: number;
+  limit: number;
+}

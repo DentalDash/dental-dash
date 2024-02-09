@@ -10,18 +10,14 @@ import { AuthModule } from './auth/auth.module';
       type: 'postgres',
       host: 'localhost',
       port: 5432,
-      username: 'pguser',
-      password: 'pgpassword',
+      username: 'postgres',
+      password: 'admin',
       database: 'dental_dash',
       entities: [User],
       synchronize: true,
-      
-
     }),
     UsersModule,
     AuthModule,
-    
-   
   ],
   controllers: [],
   providers: [],

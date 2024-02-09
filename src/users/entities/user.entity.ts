@@ -9,11 +9,11 @@ import {
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 
-@Entity()
+@Entity('users')
 @Unique(['email'])
 export class User extends BaseEntity {
   validatePassword(password: string) {
-      throw new Error('Method not implemented.');
+    throw new Error('Method not implemented.');
   }
   @PrimaryGeneratedColumn('uuid')
   id: string;

@@ -31,7 +31,7 @@ export class AuthService {
       throw new UnprocessableEntityException('As senhas não conferem');
     }
 
-    const { passwordConfirmation, ...userData } = createUserDto; // Remover passwordConfirmation dos dados do usuário
+    const { ...userData } = createUserDto; // Remover passwordConfirmation dos dados do usuário
 
     const salt = await bcrypt.genSalt(); // Gerar salt
     const hashedPassword = await bcrypt.hash(createUserDto.password, salt); // Gerar hash da senha com o salt
