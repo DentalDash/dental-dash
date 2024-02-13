@@ -16,6 +16,8 @@ import { UserRepository } from './users.repository';
 
 @Injectable()
 export class UsersService {
+  save: any;
+  findByConfirmationToken: any;
   constructor(private readonly usersRepository: UserRepository) {}
 
   async createAdminUser(createUserDto: CreateUserDto): Promise<User> {
@@ -104,4 +106,6 @@ export class UsersService {
       throw new InternalServerErrorException('Erro ao buscar os usuários');
     }
   }
+
+  
 }
