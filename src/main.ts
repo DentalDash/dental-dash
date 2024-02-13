@@ -9,7 +9,7 @@ import * as winston from 'winston';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { createDBIfNotExists } from './ormconfig';
+import { createDBIfNotExists } from './configs/ormconfig';
 import 'dotenv/config';
 
 async function bootstrap() {
