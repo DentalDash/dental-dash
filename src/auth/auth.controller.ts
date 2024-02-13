@@ -2,8 +2,13 @@ import {
   Body,
   Controller,
   Get,
+  NotFoundException,
+  Param,
+  Patch,
   Post,
+  Query,
   UnauthorizedException,
+  UnprocessableEntityException,
   ValidationPipe,
 } from '@nestjs/common';
 import { UseGuards } from '@nestjs/common/decorators/core/use-guards.decorator';
@@ -13,10 +18,11 @@ import { CreateUserDto } from '../users/dto/create-user.dto';
 import { RolesGuard } from './auth.guard';
 import { AuthService } from './auth.service';
 import { GetUserId } from './auth.user';
-
+import { UsersService } from 'src/users/users.service';
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  mailerService: any;
+  constructor(private authService: AuthService, private usersService: UsersService) {}
 
   @Post('/signup')
   async signUp(
@@ -57,4 +63,20 @@ export class AuthController {
       return 'Erro ao buscar usuário';
     }
   }
+
+    @Get('confirm')
+    async confirm(@Query('token') token: string): Promise<string> {
+      // Verificar se o token de confirmação existe no banco de dados
+      const user = await this.usersService.findByConfirmationToken(token);
+      if (!user) {
+        throw new NotFoundException('Token de confirmação inválido');
+      }
+  
+      // Marcar o usuário como confirmado
+      user.confirmed = true;
+      await this.usersService.save(user);
+  
+      return 'Email confirmado com sucesso!';
+    }
+ 
 }
