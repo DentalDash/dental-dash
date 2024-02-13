@@ -5,22 +5,19 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from 'src/users/dto/login-dto';
-import { Repository } from 'typeorm';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { User } from '../users/entities/user.entity';
 import { UserRole } from '../users/user.role';
 import { MailerService } from '@nestjs-modules/mailer';
 import { randomBytes } from 'crypto';
-
+import { UserRepository } from 'src/users/users.repository';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User)
-    private usersRepository: Repository<User>,
+    private readonly usersRepository: UserRepository,
     private jwtService: JwtService,
     private mailerService: MailerService,
   ) {}
@@ -36,40 +33,38 @@ export class AuthService {
     }
 
     const salt = await bcrypt.genSalt(); // Gerar salt
-    const hashedPassword = await bcrypt.hash(createUserDto.password, salt); 
+    const hashedPassword = await bcrypt.hash(createUserDto.password, salt);
 
     const newUser = this.usersRepository.create({
       ...createUserDto,
       role: UserRole.USER,
-      salt: salt, 
-      password: hashedPassword, 
+      salt: salt,
+      password: hashedPassword,
     });
 
     // Gerar o Token de confirmação de e-mail
     const confirmationToken = randomBytes(32).toString('hex');
     newUser.confirmationToken = confirmationToken;
-    await this.usersRepository.save(newUser); 
+    await this.usersRepository.save(newUser);
 
     // Enviar e-mail de confirmação
     const mail = {
       to: newUser.email,
       from: 'noreply@application.com',
       subject: 'Email de confirmação',
-      template: './email-confirmation', 
+      template: './email-confirmation',
       context: {
         token: newUser.confirmationToken,
       },
     };
-    
+
     try {
       await this.mailerService.sendMail(mail);
     } catch (error) {
-
       throw new Error('Erro ao enviar e-mail de confirmação');
     }
 
     return newUser;
-   
   }
 
   async signIn(loginDto: LoginDto): Promise<{ token: string }> {
@@ -78,6 +73,10 @@ export class AuthService {
 
     if (!user) {
       throw new UnauthorizedException('Usuário não encontrado');
+    }
+
+    if (!user.status) {
+      throw new UnauthorizedException('Usuário não confirmado');
     }
 
     if (!(await bcrypt.compare(password, user.password))) {
@@ -92,11 +91,13 @@ export class AuthService {
   }
 
   async confirmEmail(token: string): Promise<void> {
-    const result = await this.usersRepository.update({ confirmationToken: token }, { confirmationToken: null });
+    const result = await this.usersRepository.update(
+      { confirmationToken: token },
+      { confirmationToken: null },
+    );
 
     if (result.affected === 0) {
       throw new NotFoundException('Token inválido');
     }
   }
-
 }

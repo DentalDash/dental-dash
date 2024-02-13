@@ -12,10 +12,11 @@ import { mailerConfig } from './configs/mail-config';
 import { UsersController } from './users/users.controller';
 import { AuthController } from './auth/auth.controller';
 import { UsersService } from './users/users.service';
+import { AuthService } from './auth/auth.service';
+import { UserRepository } from './users/users.repository';
 @Module({
   imports: [
-    TypeOrmModule.forRoot(
-      {
+    TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
       port: 5432,
@@ -33,12 +34,10 @@ import { UsersService } from './users/users.service';
 
   controllers: [UsersController, AuthController],
   providers: [
-    { provide: APP_INTERCEPTOR, 
-      useClass: LoggerInterceptor },
-     UsersService],
-    
-  }
-    )
-
-    
+    { provide: APP_INTERCEPTOR, useClass: LoggerInterceptor },
+    UsersService,
+    UserRepository,
+    AuthService,
+  ],
+})
 export class AppModule {}
