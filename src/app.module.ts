@@ -7,7 +7,11 @@ import { WinstonModule } from 'nest-winston';
 import { winstonConfig } from './configs/logs-config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { LoggerInterceptor } from './interceptors/log-interceptors';
-
+import { MailerModule } from '@nestjs-modules/mailer';
+import { mailerConfig } from './configs/mail-config';
+import { UsersController } from './users/users.controller';
+import { AuthController } from './auth/auth.controller';
+import { UsersService } from './users/users.service';
 @Module({
   imports: [
     TypeOrmModule.forRoot(
@@ -22,14 +26,19 @@ import { LoggerInterceptor } from './interceptors/log-interceptors';
       synchronize: true,
     }),
     WinstonModule.forRoot(winstonConfig),
+    MailerModule.forRoot(mailerConfig),
     UsersModule,
     AuthModule,
   ],
 
-  controllers: [],
+  controllers: [UsersController, AuthController],
   providers: [
-    { provide: APP_INTERCEPTOR, useClass: LoggerInterceptor },],
-
+    { provide: APP_INTERCEPTOR, 
+      useClass: LoggerInterceptor },
+     UsersService],
+    
   }
     )
+
+    
 export class AppModule {}
