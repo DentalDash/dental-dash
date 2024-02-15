@@ -13,6 +13,7 @@ import { UserRole } from '../users/user.role';
 import { MailerService } from '@nestjs-modules/mailer';
 import { randomBytes } from 'crypto';
 import { UserRepository } from 'src/users/users.repository';
+import { ChangePasswordDto } from 'src/users/dto/change-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -100,4 +101,49 @@ export class AuthService {
       throw new NotFoundException('Token inválido');
     }
   }
+  async sendRecoverPasswordEmail(email: string): Promise<void> {
+    const user = await this.usersRepository.findOne({ where: { email } });
+
+    if (!user)
+      throw new NotFoundException('Não há usuário cadastrado com esse email.');
+
+    const recoverToken = randomBytes(32).toString('hex');
+    user.recoverToken = recoverToken;
+    user.recoverTokenExpiration = new Date(Date.now() + 3600000); // 1 hour expiration
+    await user.save();
+
+    const mail = {
+      to: user.email,
+      from: 'noreply@application.com',
+      subject: 'Recuperação de senha',
+      template: 'recover-password',
+      context: {
+        token: recoverToken,
+      },
+    };
+
+    await this.mailerService.sendMail(mail);
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<void> {
+    const user = await this.usersRepository.findOne({ where: { recoverToken: token } });
+
+    if (!user) {
+      throw new NotFoundException('Token de recuperação de senha inválido.');
+    }
+
+    user.password = newPassword;
+    user.recoverToken = null; 
+    await user.save();
+
+    // Enviar um email de confirmação
+    const confirmationMail = {
+      to: user.email,
+      from: 'noreply@application.com',
+      subject: 'Confirmação de redefinição de senha',
+      text: 'Sua senha foi redefinida com sucesso.',
+    };
+    await this.mailerService.sendMail(confirmationMail);
+  }
+
 }
