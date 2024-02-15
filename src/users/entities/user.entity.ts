@@ -42,4 +42,5 @@ export class User extends BaseEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+  recoverTokenExpiration: Date;
 }
