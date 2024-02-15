@@ -21,3 +21,6 @@ export const mailerConfig: MailerOptions = {
     },
   },
 };
+
+const layoutsDir = mailerConfig.template.options.layoutsDir;
+console.log(layoutsDir);
