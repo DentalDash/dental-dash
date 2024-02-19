@@ -14,6 +14,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { randomBytes } from 'crypto';
 import { UserRepository } from 'src/users/users.repository';
 import { ChangePasswordDto } from 'src/users/dto/change-password.dto';
+import { template } from 'handlebars';
 
 @Injectable()
 export class AuthService {
@@ -53,11 +54,13 @@ export class AuthService {
       to: newUser.email,
       from: 'noreply@application.com',
       subject: 'Email de confirmação',
-      template: './email-confirmation',
+      template: 'email-confirmation',
+      
       context: {
         token: newUser.confirmationToken,
       },
     };
+
 
     try {
       await this.mailerService.sendMail(mail);
