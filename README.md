@@ -24,7 +24,7 @@ O projeto está em construção e seu progesso será atualizado neste repositór
 #### Retorna os dados do Usuário do sistema:
 
 ```http
-  GET auth/me
+GET auth/me
 ```
 
 | Parâmetro   | Tipo       | Descrição                           |
@@ -37,8 +37,7 @@ O projeto está em construção e seu progesso será atualizado neste repositór
 #### Cria um usuário com permissão comum
 
 ```http
- POST: /auth/signup
-
+POST /auth/signup 
 ```
 
 | Parâmetro   | Tipo       | Descrição                                   |
@@ -50,8 +49,7 @@ O projeto está em construção e seu progesso será atualizado neste repositór
 
 #### Cria um usuário com permissão de admininstrador
 ```http
- POST: /users
-
+ POST /users
  ```
 
  | Parâmetro   | Tipo       | Descrição                                   |
@@ -73,8 +71,7 @@ DELETE /users/{id}
 
 #### Realizar login e retornar token
 ```http
-POST: /auth/signin 
-
+POST /auth/signin 
 ```
 
 
