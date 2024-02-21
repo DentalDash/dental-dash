@@ -1,10 +1,16 @@
 // Create an entity named supplies with the columns id, name, description, isConsumable, materialType
 
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class Supplies {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: number;
 
   @Column({ nullable: false, type: 'varchar', length: 200 })
@@ -18,4 +24,10 @@ export class Supplies {
 
   @Column({ nullable: false, type: 'varchar', length: 200 })
   materialType: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

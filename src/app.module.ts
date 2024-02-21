@@ -14,6 +14,11 @@ import { AuthController } from './auth/auth.controller';
 import { UsersService } from './users/users.service';
 import { AuthService } from './auth/auth.service';
 import { UserRepository } from './users/users.repository';
+import { Supplies } from './suplies/entities/supplies.entity';
+import { SuppliesModule } from './suplies/supplies.module';
+import { SuppliesController } from './suplies/supplies.controller';
+import { SuppliesService } from './suplies/supplies.service';
+import { SuppliesRepository } from './suplies/supplies.repository';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -23,21 +28,24 @@ import { UserRepository } from './users/users.repository';
       username: 'pguser',
       password: 'pgpassword',
       database: 'dental_dash',
-      entities: [User],
+      entities: [User, Supplies],
       synchronize: true,
     }),
     WinstonModule.forRoot(winstonConfig),
     MailerModule.forRoot(mailerConfig),
     UsersModule,
     AuthModule,
+    SuppliesModule,
   ],
 
-  controllers: [UsersController, AuthController],
+  controllers: [UsersController, AuthController, SuppliesController],
   providers: [
     { provide: APP_INTERCEPTOR, useClass: LoggerInterceptor },
     UsersService,
     UserRepository,
     AuthService,
+    SuppliesService,
+    SuppliesRepository,
   ],
 })
 export class AppModule {}

@@ -13,8 +13,6 @@ import { UserRole } from '../users/user.role';
 import { MailerService } from '@nestjs-modules/mailer';
 import { randomBytes } from 'crypto';
 import { UserRepository } from 'src/users/users.repository';
-import { ChangePasswordDto } from 'src/users/dto/change-password.dto';
-import { template } from 'handlebars';
 
 @Injectable()
 export class AuthService {
@@ -55,12 +53,11 @@ export class AuthService {
       from: 'noreply@application.com',
       subject: 'Email de confirmação',
       template: 'email-confirmation',
-      
+
       context: {
         token: newUser.confirmationToken,
       },
     };
-
 
     try {
       await this.mailerService.sendMail(mail);
@@ -129,14 +126,16 @@ export class AuthService {
   }
 
   async resetPassword(token: string, newPassword: string): Promise<void> {
-    const user = await this.usersRepository.findOne({ where: { recoverToken: token } });
+    const user = await this.usersRepository.findOne({
+      where: { recoverToken: token },
+    });
 
     if (!user) {
       throw new NotFoundException('Token de recuperação de senha inválido.');
     }
 
     user.password = newPassword;
-    user.recoverToken = null; 
+    user.recoverToken = null;
     await user.save();
 
     // Enviar um email de confirmação
@@ -148,5 +147,4 @@ export class AuthService {
     };
     await this.mailerService.sendMail(confirmationMail);
   }
-
 }
