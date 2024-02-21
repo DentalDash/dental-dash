@@ -3,7 +3,6 @@ import {
   Post,
   Body,
   ValidationPipe,
-  UseGuards,
   Get,
   Param,
   Patch,
@@ -16,7 +15,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
 import { ReturnUserDto } from './dto/return-user.dto';
 
-import { RolesGuard } from '../auth/auth.guard';
 import { Role } from '../auth/auth.role';
 import { UserRole } from './user.role';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -29,8 +27,6 @@ export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Post()
-  @Role(UserRole.ADMIN)
-  @UseGuards(RolesGuard)
   async createAdminUser(
     @Body(ValidationPipe) createUserDto: CreateUserDto,
   ): Promise<ReturnUserDto> {
