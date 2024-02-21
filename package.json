@@ -21,7 +21,7 @@
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -d ./src/configs/ormconfig.ts",
     "typeorm:no:source": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
     "migration:generate": "yarn typeorm migration:generate",
-    "migration:create": "yarn typeorm:no:source migration:create",
+    "migration:create": "yarn typeorm migration:create ",
     "migration:run": "yarn typeorm migration:run",
     "migration:run:dev": "cross-env NODE_ENV=development yarn typeorm migration:run",
     "migration:revert": "yarn typeorm migration:revert",
@@ -50,6 +50,7 @@
     "rxjs": "^7.8.1",
     "sqlite3": "^5.1.7",
     "typeorm": "^0.3.20",
+    "typeorm-extension": "^3.5.0",
     "winston": "^3.11.0"
   },
   "devDependencies": {
@@ -90,11 +91,8 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
-
-    },
-    "resolutions": {
-      "string-width": "4.2.3"
-    }
-
+  },
+  "resolutions": {
+    "string-width": "4.2.3"
   }
- 
+}
