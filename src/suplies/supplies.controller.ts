@@ -1,6 +1,6 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, ValidationPipe } from '@nestjs/common';
 import { SuppliesService } from './supplies.service';
-import { CreateSuppliesDto } from './dto/create-supplies-dto';
+import { CreateSuppliesDto } from './dto/create-supplies.dto';
 import { Supplies } from './entities/supplies.entity';
 
 @Controller('supplies')
@@ -9,7 +9,7 @@ export class SuppliesController {
 
   @Post('/createSupplies')
   async createSupplies(
-    @Body() createSuppliesDto: CreateSuppliesDto,
+    @Body(ValidationPipe) createSuppliesDto: CreateSuppliesDto,
   ): Promise<{ supplies: Supplies; message: string }> {
     const supplies =
       await this.suppliesService.createSupplies(createSuppliesDto);
