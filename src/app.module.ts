@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, OnApplicationBootstrap } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
@@ -19,6 +19,7 @@ import { SuppliesModule } from './suplies/supplies.module';
 import { SuppliesController } from './suplies/supplies.controller';
 import { SuppliesService } from './suplies/supplies.service';
 import { SuppliesRepository } from './suplies/supplies.repository';
+import { Connection } from 'typeorm';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -48,4 +49,13 @@ import { SuppliesRepository } from './suplies/supplies.repository';
     SuppliesRepository,
   ],
 })
-export class AppModule {}
+export class AppModule implements OnApplicationBootstrap {
+  constructor(
+    private readonly connection: Connection,
+    private readonly authService: AuthService,
+  ) {}
+
+  async onApplicationBootstrap() {
+    await this.authService.initializeApp();
+  }
+}
