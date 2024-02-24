@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { SuppliesRepository } from './supplies.repository';
-import { CreateSuppliesDto } from './dto/create-supplies-dto';
+import { CreateSuppliesDto } from './dto/create-supplies.dto';
 import { Supplies } from './entities/supplies.entity';
 
 @Injectable()
