@@ -10,6 +10,7 @@ import {
   Delete,
   InternalServerErrorException,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
@@ -21,11 +22,13 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { GetUserId } from 'src/auth/auth.user';
 import { User } from './entities/user.entity';
 import { FindUsersQueryDto } from './dto/find-user.dto';
+import { RolesGuard } from 'src/auth/auth.guard';
 
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
+  @UseGuards(RolesGuard)
   @Post()
   async createAdminUser(
     @Body(ValidationPipe) createUserDto: CreateUserDto,
