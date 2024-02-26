@@ -17,12 +17,17 @@ export class UserRepository extends Repository<User> {
   constructor(private dataSource: DataSource) {
     super(User, dataSource.createEntityManager());
   }
-
   async createUser(
     createUserDto: CreateUserDto,
     role: UserRole,
   ): Promise<User> {
     const { email, name, password } = createUserDto;
+
+    const existingUser = await this.findOne({ where: { email } });
+
+    if (existingUser) {
+      throw new ConflictException('Endereço de email já está em uso!');
+    }
 
     const user = this.create();
     user.email = email;
@@ -32,19 +37,18 @@ export class UserRepository extends Repository<User> {
     user.confirmationToken = crypto.randomBytes(32).toString('hex');
     user.salt = await bcrypt.genSalt();
     user.password = await this.hashPassword(password, user.salt);
+
     try {
       await user.save();
       delete user.password;
       delete user.salt;
       return user;
     } catch (error) {
-      if (error.code.toString() === '23505') {
-        throw new ConflictException('Endereço de email já está em uso');
-      } else {
-        throw new InternalServerErrorException(
-          'Erro ao salvar o usuário no banco de dados',
-        );
-      }
+      // Se ocorrer qualquer outro erro durante a criação do usuário,
+      // lança uma exceção de erro interno do servidor
+      throw new InternalServerErrorException(
+        'Erro ao salvar o usuário no banco de dados',
+      );
     }
   }
 
