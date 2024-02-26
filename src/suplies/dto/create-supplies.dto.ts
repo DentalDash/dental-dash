@@ -1,4 +1,4 @@
-import { MaxLength, IsNotEmpty, IsBoolean } from 'class-validator';
+import { MaxLength, IsNotEmpty } from 'class-validator';
 
 export class CreateSuppliesDto {
   @IsNotEmpty({
@@ -19,9 +19,6 @@ export class CreateSuppliesDto {
 
   @IsNotEmpty({
     message: 'Informe se o suprimento é consumível',
-  })
-  @IsBoolean({
-    message: 'O campo isConsumable deve ser do tipo booleano',
   })
   isConsumable: boolean;
 
