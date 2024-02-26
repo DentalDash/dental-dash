@@ -51,11 +51,9 @@ export class UsersService {
     id: string,
     user: User,
   ): Promise<User> {
-    // Verificar se o usuário tem permissão para atualizar com base no papel
-
     const userToUpdate = await this.findUserById(id);
     const { name, email, role, status } = updateUserDto;
-    // Atualizar apenas os campos fornecidos no DTO
+
     if (name) {
       userToUpdate.name = name;
     }
@@ -63,7 +61,6 @@ export class UsersService {
       userToUpdate.email = email;
     }
     if (role) {
-      // Verificar se o usuário tem permissão para atribuir o papel
       if (user.role !== UserRole.ADMIN) {
         throw new ForbiddenException(
           'Você não tem permissão para atribuir papéis',
