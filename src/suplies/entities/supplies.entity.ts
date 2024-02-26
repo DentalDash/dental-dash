@@ -6,12 +6,13 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  BaseEntity,
 } from 'typeorm';
 
 @Entity()
-export class Supplies {
+export class Supplies extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @Column({ nullable: false, type: 'varchar', length: 200 })
   name: string;

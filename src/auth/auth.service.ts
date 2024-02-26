@@ -13,6 +13,7 @@ import { UserRole } from '../users/user.role';
 import { MailerService } from '@nestjs-modules/mailer';
 import { randomBytes } from 'crypto';
 import { UserRepository } from 'src/users/users.repository';
+import { genSalt, hash } from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -109,7 +110,7 @@ export class AuthService {
 
     const recoverToken = randomBytes(32).toString('hex');
     user.recoverToken = recoverToken;
-    user.recoverTokenExpiration = new Date(Date.now() + 3600000); // 1 hour expiration
+    user.recoverTokenExpiration = new Date(Date.now() + 3600000);
     await user.save();
 
     const mail = {
@@ -130,21 +131,26 @@ export class AuthService {
       where: { recoverToken: token },
     });
 
-    if (!user) {
-      throw new NotFoundException('Token de recuperação de senha inválido.');
-    }
-
     user.password = newPassword;
-    user.recoverToken = null;
     await user.save();
+  }
 
-    // Enviar um email de confirmação
-    const confirmationMail = {
-      to: user.email,
-      from: 'noreply@application.com',
-      subject: 'Confirmação de redefinição de senha',
-      text: 'Sua senha foi redefinida com sucesso.',
-    };
-    await this.mailerService.sendMail(confirmationMail);
+  async initializeApp() {
+    const adminExists = await User.findOne({
+      where: { email: 'admin@dentaldash.com' },
+    });
+
+    // Se o usuário administrador não existir, crie-o
+    if (!adminExists) {
+      const user = new User();
+      user.email = 'admin@dentaldash.com';
+      user.name = 'Admin';
+      user.role = UserRole.ADMIN;
+      user.status = true;
+      user.salt = await genSalt();
+      user.password = await hash('admin', user.salt);
+      user.confirmationToken = randomBytes(32).toString('hex');
+      await user.save();
+    }
   }
 }

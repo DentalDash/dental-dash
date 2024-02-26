@@ -3,8 +3,6 @@ import {
   Controller,
   Get,
   NotFoundException,
-  Param,
-  Patch,
   Post,
   Query,
   UnauthorizedException,
@@ -18,7 +16,6 @@ import { CreateUserDto } from '../users/dto/create-user.dto';
 import { RolesGuard } from './auth.guard';
 import { AuthService } from './auth.service';
 import { GetUserId } from './auth.user';
-import { ChangePasswordDto } from 'src/users/dto/change-password.dto';
 @Controller('auth')
 export class AuthController {
   mailerService: any;
@@ -90,10 +87,10 @@ export class AuthController {
   }
   @Post('/reset-password')
   async resetPassword(
-    @Body('token') token: string,
     @Body('password') password: string,
+    @Query('token') token: string,
   ): Promise<{ message: string }> {
-    await this.authService.resetPassword(token, password);
+    await this.authService.resetPassword(password, token);
     return { message: 'Sua senha foi redefinida com sucesso.' };
   }
 }
