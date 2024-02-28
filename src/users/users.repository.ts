@@ -1,60 +1,16 @@
-import {
-  ConflictException,
-  Injectable,
-  InternalServerErrorException,
-  UnprocessableEntityException,
-} from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
-import * as crypto from 'crypto';
-import { DataSource, Repository } from 'typeorm';
-import { CreateUserDto } from './dto/create-user.dto';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+
+import { DataSource, EntityManager, Repository } from 'typeorm';
+
 import { FindUsersQueryDto } from './dto/find-user.dto';
 import { User } from './entities/user.entity';
-import { UserRole } from './user.role';
 
 @Injectable()
 export class UserRepository extends Repository<User> {
   constructor(private dataSource: DataSource) {
     super(User, dataSource.createEntityManager());
   }
-  async createUser(
-    createUserDto: CreateUserDto,
-    role: UserRole,
-  ): Promise<User> {
-    const { email, name, password } = createUserDto;
-
-    const existingUser = await this.findOne({ where: { email } });
-
-    if (existingUser) {
-      throw new ConflictException('Endereço de email já está em uso!');
-    }
-
-    const user = this.create();
-    user.email = email;
-    user.name = name;
-    user.role = role;
-    user.status = true;
-    user.confirmationToken = crypto.randomBytes(32).toString('hex');
-    user.salt = await bcrypt.genSalt();
-    user.password = await this.hashPassword(password, user.salt);
-
-    try {
-      await user.save();
-      delete user.password;
-      delete user.salt;
-      return user;
-    } catch (error) {
-      // Se ocorrer qualquer outro erro durante a criação do usuário,
-      // lança uma exceção de erro interno do servidor
-      throw new InternalServerErrorException(
-        'Erro ao salvar o usuário no banco de dados',
-      );
-    }
-  }
-
-  private async hashPassword(password: string, salt: string): Promise<string> {
-    return bcrypt.hash(password, salt);
-  }
+  private entityManager: EntityManager;
 
   async findUsers(
     queryDto: FindUsersQueryDto,
