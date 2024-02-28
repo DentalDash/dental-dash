@@ -12,11 +12,16 @@ import { User } from './entities/user.entity';
 import { UserRole } from './user.role';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FindUsersQueryDto } from './dto/find-user.dto';
+import { DataSource, EntityManager } from 'typeorm';
 import { UserRepository } from './users.repository';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly usersRepository: UserRepository) {}
+  private entityManager: EntityManager;
+  constructor(
+    private readonly dataSource: DataSource,
+    private readonly usersRepository: UserRepository,
+  ) {}
 
   async createAdminUser(createUserDto: CreateUserDto): Promise<User> {
     if (createUserDto.password != createUserDto.passwordConfirmation) {
