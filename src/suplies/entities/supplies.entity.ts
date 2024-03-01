@@ -8,10 +8,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   BaseEntity,
-  ManyToOne,
+  ManyToMany,
 } from 'typeorm';
 
-@Entity()
+@Entity('supplies')
 export class Supplies extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -28,8 +28,8 @@ export class Supplies extends BaseEntity {
   @Column({ nullable: false, type: 'varchar', length: 200 })
   materialType: string;
 
-  @ManyToOne(() => Procedure, (procedure) => procedure.supplies)
-  procedure: Procedure;
+  @ManyToMany(() => Procedure, (procedure) => procedure.supplies)
+  procedures: Procedure[];
 
   @CreateDateColumn()
   createdAt: Date;

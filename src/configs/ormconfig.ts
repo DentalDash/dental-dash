@@ -5,13 +5,13 @@ const dbConfig = (): PostgresConnectionOptions => ({
   type: 'postgres',
   host: 'localhost',
   port: 5432,
-  database: 'dental_dash',
-  username: 'pguser',
-  password: 'pgpassword',
+  database: 'pguser',
+  username: 'pgpassword',
+  password: 'admin',
   logging: true,
   synchronize: true,
   migrations: ['dist/migrations/*{.ts,.js}'],
-  entities: ['dist/entity/**/*.js'],
+  entities: ['dist/**/*.entity.js'],
 });
 
 export const AppDataSource = new DataSource(dbConfig());
