@@ -20,6 +20,7 @@ import { SuppliesController } from './suplies/supplies.controller';
 import { SuppliesService } from './suplies/supplies.service';
 import { SuppliesRepository } from './suplies/supplies.repository';
 import { Connection } from 'typeorm';
+import { Procedure } from './procedures/entities/procedures.entity';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -29,9 +30,11 @@ import { Connection } from 'typeorm';
       username: 'pguser',
       password: 'pgpassword',
       database: 'dental_dash',
-      entities: [User, Supplies],
+      entities: [User, Supplies, Procedure],
       synchronize: true,
     }),
+
+    TypeOrmModule.forFeature([User, Supplies, Procedure]),
     WinstonModule.forRoot(winstonConfig),
     MailerModule.forRoot(mailerConfig),
     UsersModule,
