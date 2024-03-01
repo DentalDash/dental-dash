@@ -1,5 +1,6 @@
 // Create an entity named supplies with the columns id, name, description, isConsumable, materialType
 
+import { Procedure } from 'src/procedures/entities/procedures.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -7,6 +8,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   BaseEntity,
+  ManyToOne,
 } from 'typeorm';
 
 @Entity()
@@ -25,6 +27,9 @@ export class Supplies extends BaseEntity {
 
   @Column({ nullable: false, type: 'varchar', length: 200 })
   materialType: string;
+
+  @ManyToOne(() => Procedure, (procedure) => procedure.supplies)
+  procedure: Procedure;
 
   @CreateDateColumn()
   createdAt: Date;
