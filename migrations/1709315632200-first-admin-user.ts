@@ -3,7 +3,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 import { genSalt, hash } from 'bcrypt';
 import { randomBytes } from 'crypto';
 
-export class $npmConfigName1707444043791 implements MigrationInterface {
+export class FirstAdminUser1709315632200 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Creates an admin user with the password #Dm140192
     const user = {} as any;
