@@ -11,7 +11,7 @@ const dbConfig = (): PostgresConnectionOptions => ({
   logging: true,
   synchronize: true,
   migrations: ['dist/migrations/*{.ts,.js}'],
-  entities: ['dist/**/*.entity.js'],
+  entities: ['dist/entity/**/*.js'],
 });
 
 export const AppDataSource = new DataSource(dbConfig());
