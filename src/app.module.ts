@@ -21,6 +21,9 @@ import { SuppliesService } from './suplies/supplies.service';
 import { SuppliesRepository } from './suplies/supplies.repository';
 import { Connection } from 'typeorm';
 import { Procedure } from './procedures/entities/procedures.entity';
+import { ProcedureModule } from './procedures/procedures.module';
+import { ProceduresService } from './procedures/procedures.service';
+import { ProceduresRepository } from './procedures/procedures.repository';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -40,6 +43,7 @@ import { Procedure } from './procedures/entities/procedures.entity';
     UsersModule,
     AuthModule,
     SuppliesModule,
+    ProcedureModule,
   ],
 
   controllers: [UsersController, AuthController, SuppliesController],
@@ -50,6 +54,8 @@ import { Procedure } from './procedures/entities/procedures.entity';
     AuthService,
     SuppliesService,
     SuppliesRepository,
+    ProceduresService,
+    ProceduresRepository,
   ],
 })
 export class AppModule implements OnApplicationBootstrap {
