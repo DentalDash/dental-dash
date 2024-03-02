@@ -1,6 +1,6 @@
-import { IsNotEmpty, MaxLength } from 'class-validator';
+import { ArrayNotEmpty, IsNotEmpty, MaxLength } from 'class-validator';
 
-export class CreateProcedureDro {
+export class CreateProcedureDto {
   @IsNotEmpty({
     message: 'Informe o nome do procedimento',
   })
@@ -16,4 +16,7 @@ export class CreateProcedureDro {
     message: 'A descrição do procedimento deve ter menos de 200 caracteres',
   })
   description: string;
+
+  @ArrayNotEmpty({ message: 'Informe pelo menos um insumo a ser utilizado' })
+  suppliesNames: string[];
 }
