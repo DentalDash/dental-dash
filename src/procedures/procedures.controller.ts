@@ -1,7 +1,16 @@
-import { Body, Controller, Post, ValidationPipe } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Param,
+  Post,
+  ValidationPipe,
+} from '@nestjs/common';
 import { ProceduresService } from './procedures.service';
 import { CreateProcedureDto } from './dto/create-procedures.dto';
 import { Procedure } from './entities/procedures.entity';
+import { UserRole } from 'src/users/user.role';
+import { Role } from 'src/auth/auth.role';
 
 @Controller('procedure')
 export class ProceduresController {
@@ -14,5 +23,14 @@ export class ProceduresController {
     const procedure =
       await this.procedureService.createProcedure(createProceduresDto);
     return { procedure, message: 'Procedimento cadastrado com sucesso!' };
+  }
+
+  @Delete(':id')
+  @Role(UserRole.ADMIN)
+  async deleteProcedures(@Param('id') id: string) {
+    await this.procedureService.deleteProcedures(id);
+    return {
+      message: 'Procedimento removido com sucesso',
+    };
   }
 }
