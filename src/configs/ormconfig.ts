@@ -5,7 +5,7 @@ const dbConfig = (): PostgresConnectionOptions => ({
   type: 'postgres',
   host: 'localhost',
   port: 5432,
-  database: 'dental_host',
+  database: 'dental_dash',
   username: 'pguser',
   password: 'pgpassword',
   logging: true,

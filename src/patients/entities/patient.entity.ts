@@ -1,12 +1,12 @@
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum Gender {
-  MALE = 'male',
-  FEMALE = 'female',
-  OTHER = 'other',
+  MALE = 'Homem',
+  FEMALE = 'Mulher',
+  OTHER = 'Outro',
 }
 
-@Entity('patients')
+@Entity('patient')
 export class Patient extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;

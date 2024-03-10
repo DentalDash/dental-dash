@@ -21,7 +21,7 @@ export class CreatePatientsDto {
 
   @IsNotEmpty({ message: 'Informe o telefone do paciente' })
   @Matches(
-    /^(?:(?:\+|00)?(55)\s?)?(?:(?([1-9][0-9]))?\s?)?(?:(9\d|[2-9])\d{3})-?(\d{4})$/,
+    /^(?:(?:\+|00)?(55)\s?)?(?:[1-9][0-9]?\s?)?(?:(9\d|[2-9])\d{3})-?(\d{4})$/,
     {
       message: 'Informe um telefone válido',
     },
