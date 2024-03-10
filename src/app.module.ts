@@ -24,6 +24,10 @@ import { Procedure } from './procedures/entities/procedures.entity';
 import { ProcedureModule } from './procedures/procedures.module';
 import { ProceduresService } from './procedures/procedures.service';
 import { ProceduresRepository } from './procedures/procedures.repository';
+import { PatientsRepository } from './patients/patients.repository';
+import { PatientsService } from './patients/patients.service';
+import { PatientsController } from './patients/patients.controller';
+import { Patient } from './patients/entities/patient.entity';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -33,7 +37,7 @@ import { ProceduresRepository } from './procedures/procedures.repository';
       username: 'pguser',
       password: 'pgpassword',
       database: 'dental_dash',
-      entities: [User, Supplies, Procedure],
+      entities: [User, Supplies, Procedure, Patient],
       synchronize: true,
     }),
 
@@ -46,7 +50,7 @@ import { ProceduresRepository } from './procedures/procedures.repository';
     ProcedureModule,
   ],
 
-  controllers: [UsersController, AuthController, SuppliesController],
+  controllers: [UsersController, AuthController, SuppliesController,PatientsController],
   providers: [
     { provide: APP_INTERCEPTOR, useClass: LoggerInterceptor },
     UsersService,
@@ -56,6 +60,8 @@ import { ProceduresRepository } from './procedures/procedures.repository';
     SuppliesRepository,
     ProceduresService,
     ProceduresRepository,
+    PatientsRepository,
+    PatientsService,
   ],
 })
 export class AppModule implements OnApplicationBootstrap {
