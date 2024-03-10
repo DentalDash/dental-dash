@@ -70,7 +70,7 @@ export class SuppliesController {
       return updatedSupple;
     } catch (error) {
       if (error instanceof ForbiddenException) {
-        throw error; // Repassa a exceção ForbiddenException diretamente
+        throw error; 
       } else if (error instanceof UnauthorizedException) {
         throw new UnauthorizedException(
           'Você não tem acesso para atualizar o usuário',
