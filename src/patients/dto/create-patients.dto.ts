@@ -5,7 +5,7 @@ import {
   IsDateString,
   Matches,
 } from 'class-validator';
-import { cpf } from 'cpf-cnpj-validator';
+
 import { Gender } from '../entities/patient.entity';
 
 export class CreatePatientsDto {
@@ -31,6 +31,10 @@ export class CreatePatientsDto {
   @IsNotEmpty({ message: 'Informe o CPF do paciente' })
   @MaxLength(11, {
     message: 'O CPF do paciente deve ter no máximo 11 caracteres',
+  })
+  @Matches(/^\d{3}\.?\d{3}\.?\d{3}-?\d{2}$/, {
+    //Valida CPF no formato 000.000.000-00 e 00000000000
+    message: 'Informe um CPF válido do tipo 000.000.000-00',
   })
   cpf: string;
 
@@ -79,6 +83,10 @@ export class CreatePatientsDto {
   @MaxLength(9, {
     message: 'O CEP do paciente deve ter no máximo 9 caracteres',
   })
+  @Matches(/^\d{5}-\d{3}$/, {
+    //Valida CEP no formato 00000-000
+    message: 'Informe um CEP válido do tipo 00000-000',
+  })
   zipCode: string;
 
   @IsNotEmpty({ message: 'Informe as alergias do paciente' })
@@ -100,9 +108,4 @@ export class CreatePatientsDto {
       'As condições médicas do paciente devem ter no máximo 500 caracteres',
   })
   medicalConditions: string;
-
-  @IsNotEmpty({ message: 'CPF inválido' })
-  isCPFValid() {
-    return cpf.isValid(this.cpf);
-  }
 }
