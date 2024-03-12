@@ -47,7 +47,7 @@ export class Patient extends BaseEntity {
   @Column({ nullable: false, type: 'varchar', length: 100 })
   state: string;
 
-  @Column({ nullable: false, type: 'varchar', length: 8 })
+  @Column({ nullable: false, type: 'varchar', length: 9 })
   zipCode: string;
 
   @Column({ nullable: true, type: 'text' })
