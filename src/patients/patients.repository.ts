@@ -7,7 +7,9 @@ import { CreatePatientsDto } from './dto/create-patients.dto';
 export class PatientsRepository extends Repository<Patient> {
   constructor(private dataSource: DataSource) {
     super(Patient, dataSource.createEntityManager());
+    this.entityManager = dataSource.createEntityManager();
   }
+
   private entityManager: EntityManager;
 
   async createPatient(createPatientsDto: CreatePatientsDto): Promise<Patient> {
@@ -30,9 +32,15 @@ export class PatientsRepository extends Repository<Patient> {
       medicalConditions,
     } = createPatientsDto;
 
+    // Verifica se o CPF já está cadastrado
     const cpfExists = await this.findOne({ where: { cpf } });
     if (cpfExists) {
       throw new BadRequestException('CPF já cadastrado');
+    }
+
+    
+    if (!this.validateCPF(cpf)) {
+      throw new BadRequestException('CPF inválido');
     }
 
     const patient = new Patient();
@@ -54,5 +62,31 @@ export class PatientsRepository extends Repository<Patient> {
     patient.medicalConditions = medicalConditions;
 
     return this.manager.save(patient);
+  }
+
+  
+  private validateCPF(cpf: string): boolean {
+    cpf = cpf.replace(/\D/g, ''); 
+    if (cpf.length !== 11) return false; 
+
+ 
+    let sum = 0;
+    let remainder: number;
+    for (let i = 1; i <= 9; i++) {
+      sum += parseInt(cpf.substring(i - 1, i)) * (11 - i);
+    }
+    remainder = (sum * 10) % 11;
+    if ((remainder === 10) || (remainder === 11)) remainder = 0;
+    if (remainder !== parseInt(cpf.substring(9, 10))) return false;
+
+    sum = 0;
+    for (let i = 1; i <= 10; i++) {
+      sum += parseInt(cpf.substring(i - 1, i)) * (12 - i);
+    }
+    remainder = (sum * 10) % 11;
+    if ((remainder === 10) || (remainder === 11)) remainder = 0;
+    if (remainder !== parseInt(cpf.substring(10, 11))) return false;
+
+    return true;
   }
 }
