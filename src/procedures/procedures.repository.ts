@@ -14,20 +14,19 @@ export class ProceduresRepository extends Repository<Procedure> {
     CreateProcedureDto: CreateProcedureDto,
   ): Promise<Procedure> {
     const { name, description, suppliesNames } = CreateProcedureDto;
-
-    const supplies = await Promise.all(
+     const supplies = await Promise.all(
       suppliesNames.map(async (supplyName) => {
         const supply = await this.manager.findOne(Supplies, {
           where: { name: supplyName },
-        });
-        if (!supply) {
+         });
+       if (!supply) {
           throw new NotFoundException(
-            `Insumo ${supplyName} não encontrado, verifique no cadastro e tente novamente!`,
+           `Insumo ${supplyName} não encontrado, verifique no cadastro e tente novamente!`,
           );
         }
-        return supply;
-      }),
-    );
+      return supply;
+     }),
+     );
 
     const procedure = new Procedure();
     procedure.name = name;
