@@ -73,7 +73,7 @@ export class SuppliesController {
         throw error; 
       } else if (error instanceof UnauthorizedException) {
         throw new UnauthorizedException(
-          'Você não tem acesso para atualizar o usuário',
+          'Você não tem acesso para os insumos',
         );
       } else {
         console.log(error);
