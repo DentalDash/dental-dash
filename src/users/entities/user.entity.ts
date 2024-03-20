@@ -1,3 +1,4 @@
+import { Dentist } from 'src/dentist/entities/dentist.entity';
 import {
   BaseEntity,
   Entity,
@@ -6,6 +7,9 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
+  OneToOne,
+  JoinColumn,
 } from 'typeorm';
 @Entity('users')
 @Unique(['email'])
@@ -43,4 +47,8 @@ export class User extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
   recoverTokenExpiration: Date;
+
+  @OneToOne(() => Dentist, dentist => dentist.user) 
+  dentist: Dentist; 
+
 }
