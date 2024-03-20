@@ -28,6 +28,12 @@ import { PatientsRepository } from './patients/patients.repository';
 import { PatientsService } from './patients/patients.service';
 import { PatientsController } from './patients/patients.controller';
 import { Patient } from './patients/entities/patient.entity';
+import { DentistRepository } from './dentist/dentist.repository';
+import { DentistService } from './dentist/dentist.service';
+import { Dentist } from './dentist/entities/dentist.entity';
+import { DentistController } from './dentist/dentist.controller';
+import { DentistModule } from './dentist/dentist.module';
+import { PatientsModule } from './patients/patients.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -37,7 +43,7 @@ import { Patient } from './patients/entities/patient.entity';
       username: 'pguser',
       password: 'pgpassword',
       database: 'dental_dash',
-      entities: [User, Supplies, Procedure, Patient],
+      entities: [User, Supplies, Procedure, Patient, Dentist],
       synchronize: true,
     }),
 
@@ -48,9 +54,12 @@ import { Patient } from './patients/entities/patient.entity';
     AuthModule,
     SuppliesModule,
     ProcedureModule,
+    DentistModule,
+    PatientsModule,
+
   ],
 
-  controllers: [UsersController, AuthController, SuppliesController,PatientsController],
+  controllers: [UsersController, AuthController, SuppliesController,PatientsController, DentistController],
   providers: [
     { provide: APP_INTERCEPTOR, useClass: LoggerInterceptor },
     UsersService,
@@ -62,6 +71,8 @@ import { Patient } from './patients/entities/patient.entity';
     ProceduresRepository,
     PatientsRepository,
     PatientsService,
+    DentistRepository,
+    DentistService
   ],
 })
 export class AppModule implements OnApplicationBootstrap {
