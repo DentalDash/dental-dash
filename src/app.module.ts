@@ -34,6 +34,7 @@ import { Dentist } from './dentist/entities/dentist.entity';
 import { DentistController } from './dentist/dentist.controller';
 import { DentistModule } from './dentist/dentist.module';
 import { PatientsModule } from './patients/patients.module';
+import { Consultation } from './consultation/entities/consultation.entity';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -43,7 +44,7 @@ import { PatientsModule } from './patients/patients.module';
       username: 'pguser',
       password: 'pgpassword',
       database: 'dental_dash',
-      entities: [User, Supplies, Procedure, Patient, Dentist],
+      entities: [User, Supplies, Procedure, Patient, Dentist, Consultation],
       synchronize: true,
     }),
 
