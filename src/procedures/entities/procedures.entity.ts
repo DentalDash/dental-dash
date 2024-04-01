@@ -1,3 +1,4 @@
+import { Consultation } from 'src/consultation/entities/consultation.entity';
 import { Supplies } from 'src/suplies/entities/supplies.entity';
 import {
   BaseEntity,
@@ -11,6 +12,9 @@ import {
 export class Procedure extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @ManyToMany(() => Consultation, consultation => consultation.procedure)
+  consultations: Consultation[];
 
   @Column({ nullable: false, type: 'varchar', length: 200 })
   name: string;
