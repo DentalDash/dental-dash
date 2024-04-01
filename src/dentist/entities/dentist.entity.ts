@@ -1,5 +1,6 @@
+import { Consultation } from "src/consultation/entities/consultation.entity";
 import { User } from "src/users/entities/user.entity";
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn } from "typeorm";
+import { BaseEntity, Column, Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn, OneToMany } from "typeorm";
 
 export enum EstadoCRO {
     AC = 'AC', 
@@ -33,6 +34,7 @@ export enum EstadoCRO {
 
 @Entity('dentists')
 export class Dentist extends BaseEntity {
+    
 
     @PrimaryGeneratedColumn('uuid')
     id: string;
@@ -40,6 +42,9 @@ export class Dentist extends BaseEntity {
     @OneToOne(() => User)
     @JoinColumn()
     user: User;
+
+    @OneToMany(() => Consultation, consultation => consultation.dentist)
+    consultations: Consultation[];
 
     @Column({ nullable: false, type: 'varchar', length: 50 })
     name: string;
