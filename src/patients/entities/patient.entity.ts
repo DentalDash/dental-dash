@@ -1,4 +1,5 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Consultation } from 'src/consultation/entities/consultation.entity';
+import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum Gender {
   MALE = 'Homem',
@@ -8,8 +9,12 @@ export enum Gender {
 
 @Entity('patient')
 export class Patient extends BaseEntity {
+  
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @OneToMany(() => Consultation, consultation => consultation.patient)
+  consultations: Consultation[];
 
   @Column({ nullable: false, type: 'varchar', length: 200 })
   patientName: string;
