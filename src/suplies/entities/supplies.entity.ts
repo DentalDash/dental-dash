@@ -1,5 +1,6 @@
 // Create an entity named supplies with the columns id, name, description, isConsumable, materialType
 
+import { Consultation } from 'src/consultation/entities/consultation.entity';
 import { Procedure } from 'src/procedures/entities/procedures.entity';
 import {
   Entity,
@@ -15,6 +16,9 @@ import {
 export class Supplies extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @ManyToMany(() => Consultation, consultation => consultation.supplies)
+  consultations: Consultation[]
 
   @Column({ nullable: false, type: 'varchar', length: 200 })
   name: string;
