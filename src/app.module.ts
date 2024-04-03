@@ -35,6 +35,9 @@ import { DentistController } from './dentist/dentist.controller';
 import { DentistModule } from './dentist/dentist.module';
 import { PatientsModule } from './patients/patients.module';
 import { Consultation } from './consultation/entities/consultation.entity';
+import { ConsultationService } from './consultation/consultation.service';
+import { ConsultationRepository } from './consultation/consultation.repository';
+import { ConsultationModule } from './consultation/consultation.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -48,7 +51,7 @@ import { Consultation } from './consultation/entities/consultation.entity';
       synchronize: true,
     }),
 
-    TypeOrmModule.forFeature([User, Supplies, Procedure]),
+    TypeOrmModule.forFeature([User, Supplies, Procedure, Patient, Dentist, Consultation]),
     WinstonModule.forRoot(winstonConfig),
     MailerModule.forRoot(mailerConfig),
     UsersModule,
@@ -57,6 +60,7 @@ import { Consultation } from './consultation/entities/consultation.entity';
     ProcedureModule,
     DentistModule,
     PatientsModule,
+    ConsultationModule
 
   ],
 
@@ -73,7 +77,9 @@ import { Consultation } from './consultation/entities/consultation.entity';
     PatientsRepository,
     PatientsService,
     DentistRepository,
-    DentistService
+    DentistService,
+    ConsultationService,
+    ConsultationRepository,
   ],
 })
 export class AppModule implements OnApplicationBootstrap {
