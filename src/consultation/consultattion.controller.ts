@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Delete, Param, Post, UseGuards, ValidationPipe } from "@nestjs/common";
 import { RolesGuard } from "src/auth/auth.guard";
 import { ConsultationService } from "./consultation.service";
 import { CreateConsultationDto } from "./dto/create.consultation.dto";
@@ -16,5 +16,14 @@ export class ConsultationController {
     ): Promise<{ consultation: Consultation; message: string }> {
         const consultation = await this.consultationService.createConsultation(createConsultationDto);
         return { consultation, message: 'Consulta cadastrada com sucesso!' };
+    }
+    
+    @Delete(':id')
+    @UseGuards(RolesGuard)
+    async deleteConsultation(@Param('id') id: string) {
+        await this.consultationService.deleteConsultation(id);
+        return {
+            message: 'Consulta removida com sucesso',
+        };
     }
 }
