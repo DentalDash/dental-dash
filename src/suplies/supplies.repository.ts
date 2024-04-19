@@ -21,12 +21,12 @@ export class SuppliesRepository extends Repository<Supplies> {
       throw new NotFoundException(`O insumo já está cadastrado!`);
     }
 
-    const supplies = new Supplies();
-    supplies.name = createSuppliesDto.name.toLowerCase().normalize('NFD');
-
-    supplies.description = createSuppliesDto.description;
-    supplies.isConsumable = createSuppliesDto.isConsumable;
-    supplies.materialType = createSuppliesDto.materialType;
+    const supplies = new Supplies({
+      name: createSuppliesDto.name.toLowerCase().normalize('NFD'),
+      description: createSuppliesDto.description,
+      isConsumable: createSuppliesDto.isConsumable,
+      materialType: createSuppliesDto.materialType,
+    });
 
     return this.save(supplies);
   }

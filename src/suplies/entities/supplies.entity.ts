@@ -17,8 +17,8 @@ export class Supplies extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToMany(() => Consultation, consultation => consultation.supplies)
-  consultations: Consultation[]
+  @ManyToMany(() => Consultation, (consultation) => consultation.supplies)
+  consultations: Consultation[];
 
   @Column({ nullable: false, type: 'varchar', length: 200 })
   name: string;
@@ -40,4 +40,9 @@ export class Supplies extends BaseEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  constructor(partial: Partial<Supplies>) {
+    super();
+    Object.assign(this, partial);
+  }
 }

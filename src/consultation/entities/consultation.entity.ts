@@ -1,4 +1,12 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn, ManyToOne, ManyToMany, JoinTable } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  ManyToMany,
+  JoinTable,
+} from 'typeorm';
 import { Dentist } from 'src/dentist/entities/dentist.entity';
 import { Patient } from 'src/patients/entities/patient.entity';
 import { Procedure } from 'src/procedures/entities/procedures.entity';
@@ -12,21 +20,21 @@ export class Consultation extends BaseEntity {
   @Column({ nullable: false, type: 'timestamp' })
   date_time: Date;
 
-  @ManyToOne(() => Dentist, { eager: true }) 
+  @ManyToOne(() => Dentist, { eager: true })
   dentist: Dentist;
 
   @ManyToOne(() => Patient, { eager: true })
   patient: Patient;
 
-  @ManyToMany(() => Procedure) 
+  @ManyToMany(() => Procedure)
   @JoinTable({
     name: 'consultation_procedure',
     joinColumn: { name: 'consultation_id', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'procedure_id', referencedColumnName: 'id' },
   })
-  procedure: Procedure[];
+  procedures: Procedure[];
 
-  @ManyToMany(() => Supplies) 
+  @ManyToMany(() => Supplies)
   @JoinTable({
     name: 'consultation_supplies',
     joinColumn: { name: 'consultation_id', referencedColumnName: 'id' },
@@ -36,4 +44,9 @@ export class Consultation extends BaseEntity {
 
   @Column({ nullable: true, type: 'text' })
   oservations: string;
+
+  constructor(partial: Partial<Consultation>) {
+    super();
+    Object.assign(this, partial);
+  }
 }
