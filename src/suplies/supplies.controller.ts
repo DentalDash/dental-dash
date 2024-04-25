@@ -59,7 +59,7 @@ export class SuppliesController {
   @UseGuards(RolesGuard)
   async updateSupplies(
     @Body(ValidationPipe) updateSuppliesDto: UpdateSuppliesDto,
-    @GetSupplieId() supplie: Supplies,
+    @GetSupplieId() supplies: Supplies,
     @Param('id') id: string,
   ) {
     try {
@@ -70,11 +70,9 @@ export class SuppliesController {
       return updatedSupple;
     } catch (error) {
       if (error instanceof ForbiddenException) {
-        throw error; 
+        throw error;
       } else if (error instanceof UnauthorizedException) {
-        throw new UnauthorizedException(
-          'Você não tem acesso para os insumos',
-        );
+        throw new UnauthorizedException('Você não tem acesso para os insumos');
       } else {
         console.log(error);
 

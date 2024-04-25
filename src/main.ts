@@ -12,7 +12,7 @@ import 'dotenv/config';
 
 async function bootstrap() {
   await createDBIfNotExists();
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { cors: true });
 
   const config = new DocumentBuilder()
     .setTitle('User API')
