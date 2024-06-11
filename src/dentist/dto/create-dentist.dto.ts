@@ -1,5 +1,6 @@
 import { IsBoolean, IsNotEmpty, Length, Matches } from 'class-validator';
 import { EstadoCRO } from '../entities/dentist.entity';
+import { User } from 'src/users/entities/user.entity';
 
 export class CreateDentistDto {
   @IsNotEmpty({ message: 'O campo nome não pode estar vazio' })
@@ -19,4 +20,7 @@ export class CreateDentistDto {
 
   @IsBoolean({ message: 'O campo isAdmin deve ser um booleano' })
   isAdmin: boolean;
+
+  userData: User;
+  
 }
