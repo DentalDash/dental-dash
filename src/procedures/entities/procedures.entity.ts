@@ -13,7 +13,7 @@ export class Procedure extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToMany(() => Consultation, consultation => consultation.procedure)
+  @ManyToMany(() => Consultation, consultation => consultation.procedures)
   consultations: Consultation[];
 
   @Column({ nullable: false, type: 'varchar', length: 200 })

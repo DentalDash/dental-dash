@@ -1,5 +1,6 @@
 import { IsBoolean, IsNotEmpty, Length, Matches } from 'class-validator';
 import { EstadoCRO } from '../entities/dentist.entity';
+import { User } from 'src/users/entities/user.entity';
 
 export class CreateDentistDto {
   @IsNotEmpty({ message: 'O campo nome não pode estar vazio' })
@@ -9,7 +10,6 @@ export class CreateDentistDto {
   category: string;
 
   @IsNotEmpty({ message: 'O campo número CRO não pode estar vazio' })
-  @Length(5, 6, { message: 'O número CRO deve conter 5 ou 6 dígitos' })
   @Matches(/^[A-Z]{2}\d{4,6}$/, {
     message: 'O número CRO deve conter 5 ou 6 dígitos',
   })
@@ -20,4 +20,7 @@ export class CreateDentistDto {
 
   @IsBoolean({ message: 'O campo isAdmin deve ser um booleano' })
   isAdmin: boolean;
+
+  userData: User;
+  
 }
