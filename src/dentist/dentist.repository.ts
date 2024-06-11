@@ -1,16 +1,22 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable , NotFoundException} from "@nestjs/common";
 import { DataSource, EntityManager, Repository } from "typeorm";
 import { Dentist, EstadoCRO } from "./entities/dentist.entity";
 import { CreateDentistDto } from "./dto/create-dentist.dto";
+import { User } from "src/users/entities/user.entity";
+import { UserRepository } from "src/users/users.repository";
 
 @Injectable()
 export class DentistRepository extends Repository<Dentist> {
-    constructor(private datasource : DataSource) {
+    constructor(
+        private datasource: DataSource,
+        private userRepository: UserRepository
+    ) {
         super(Dentist, datasource.createEntityManager());
         this.entityManager = datasource.createEntityManager();
     }
 
     private entityManager: EntityManager;
+
     async createDentist(createDentistDto: CreateDentistDto): Promise<Dentist> {
         const {
             name,
@@ -18,8 +24,16 @@ export class DentistRepository extends Repository<Dentist> {
             croNumber,
             croState,
             isAdmin,
-
+            userData,
         } = createDentistDto;
+
+        const user = await this.userRepository.findOne({ where: { email: userData.email } });
+        
+        if (!user) {
+            throw new NotFoundException(
+                `Email ${userData.email} não encontrado, verifique no cadastro e tente novamente!`,
+            );
+        }
 
         const croExist = await this.findOne({ where: { croNumber } });
         if (croExist) {
@@ -37,8 +51,10 @@ export class DentistRepository extends Repository<Dentist> {
         dentist.croNumber = croNumber;
         dentist.croState = croState;
         dentist.isAdmin = isAdmin;
+        dentist.user = user;
 
         return this.save(dentist);
+     
 
     }
 
