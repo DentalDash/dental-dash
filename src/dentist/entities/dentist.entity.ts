@@ -49,6 +49,7 @@ export class Dentist extends BaseEntity {
   @JoinColumn()
   user: User;
 
+
   @OneToMany(() => Consultation, (consultation) => consultation.dentist)
   consultations: Consultation[];
 
