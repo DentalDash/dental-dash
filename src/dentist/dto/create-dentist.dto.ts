@@ -9,7 +9,6 @@ export class CreateDentistDto {
   category: string;
 
   @IsNotEmpty({ message: 'O campo número CRO não pode estar vazio' })
-  @Length(5, 6, { message: 'O número CRO deve conter 5 ou 6 dígitos' })
   @Matches(/^[A-Z]{2}\d{4,6}$/, {
     message: 'O número CRO deve conter 5 ou 6 dígitos',
   })
